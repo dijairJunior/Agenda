@@ -21,12 +21,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
 
 import dijairdev.com.br.R;
 import dijairdev.com.br.modelo.Contato;
+import dijairdev.com.br.retrofit.RetrofitConfig;
+import dijairdev.com.br.retrofit.cep.Cep;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class EditaContatoFragment extends Fragment {
 
@@ -127,6 +133,28 @@ public class EditaContatoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 dispatchTakePictureIntent();
+            }
+        });
+
+        //configura o evento de click para buscar o CEP
+        buttonCep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Call<Cep> cepCall = new RetrofitConfig().getCepService().buscaCep(edtCep.getText().toString());
+                cepCall.enqueue(new Callback<Cep>() {
+                    @Override
+                    public void onResponse(Call<Cep> call, Response<Cep> response) {
+                        Cep cep = response.body();
+                        edtCep.setText(cep.getCep());
+                        edtEndereco.setText(cep.getLogradouro() + " " + cep.getBairro() + " - " + cep.getUf().toUpperCase());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Cep> call, Throwable t) {
+                        Log.e(getClass().getSimpleName(), "Erro no serviço de cep: " + t.getMessage());
+                        Toast.makeText(getActivity(), R.string.erro_servico, Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
     }
