@@ -106,4 +106,28 @@ public class EditaContatoFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //associação de componentes com a view
+        imageViewFoto = view.findViewById(R.id.imageViewFoto);
+        fabSalvar = view.findViewById(R.id.fabSalvar);
+        fabExcluir = view.findViewById(R.id.fabExcluir);
+        buttonCep = view.findViewById(R.id.buttonCep);
+        buttonSMS = view.findViewById(R.id.buttonSMS);
+        edtNome = view.findViewById(R.id.edtNome);
+        edtEndereco = view.findViewById(R.id.edtEndereco);
+        edtEmail = view.findViewById(R.id.edtEmail);
+        edtTelefone = view.findViewById(R.id.edtTelefone);
+        edtCep = view.findViewById(R.id.edtCep);
+
+        //configura o evento de click para a foto
+        imageViewFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+            }
+        });
+    }
 }
