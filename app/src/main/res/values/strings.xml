@@ -30,4 +30,5 @@
     <string name="title_menu">Agenda</string>
     <string name="menu_contato">Contato</string>
     <string name="menu_compromisso">Compromisso</string>
+    <string name="erro_permissao_camera">Sem permissão para capturar fotos</string>
 </resources>

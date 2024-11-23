@@ -1,6 +1,7 @@
 package dijairdev.com.br.ui.lista.contato;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,10 +10,16 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import androidx.navigation.fragment.NavHostFragment;
 
+import java.util.List;
+
 import dijairdev.com.br.R;
+import dijairdev.com.br.adapter.ListaContatoAdapter;
+import dijairdev.com.br.dao.ContatoDaoSQLite;
+import dijairdev.com.br.modelo.Contato;
 
 public class ListaContatoFragment extends Fragment {
 
@@ -50,5 +57,27 @@ public class ListaContatoFragment extends Fragment {
         //Atribuição click fabNovo
         FloatingActionButton fabNovo = view.findViewById(R.id.fabNovo);
         fabNovo.setOnClickListener(onNovoClick);
+    }
+
+    //classe assíncrona para listar os contatos cadastrados
+    private class ListaContatoTask extends AsyncTask<String, Integer, List<Contato>> {
+
+        @Override
+        protected List<Contato> doInBackground(String... strings) {
+            ContatoDaoSQLite contatoDaoSQLite = new ContatoDaoSQLite(getActivity());
+            return contatoDaoSQLite.lista();
+        }
+
+        @Override
+        protected void onPostExecute(List<Contato> contatos) {
+            ListView listViewContatos = getActivity().findViewById(R.id.listViewContatos);
+            listViewContatos.setAdapter(new ListaContatoAdapter(getActivity(), contatos));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        new ListaContatoTask().execute();
     }
 }
