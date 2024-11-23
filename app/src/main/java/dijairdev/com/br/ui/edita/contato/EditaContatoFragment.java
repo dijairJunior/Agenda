@@ -407,4 +407,26 @@ public class EditaContatoFragment extends Fragment {
         byte[] bitMapData = stream.toByteArray();
         return bitMapData;
     }
+
+    public void preencheCampos(Contato contato) {
+        if (contato.getFoto() != null) {
+            imageViewFoto.setImageBitmap(BitmapFactory.decodeByteArray(contato.getFoto(), 0, contato.getFoto().length));
+        }
+        edtNome.setText(contato.getNome());
+        edtEndereco.setText(contato.getEndereco());
+        edtEmail.setText(contato.getEmail());
+        edtTelefone.setText(contato.getTelefone());
+        edtCep.setText(contato.getCep());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getArguments() != null) {
+            contato = (Contato) getArguments().getSerializable("contato");
+            if (contato != null) {
+                preencheCampos(contato);
+            }
+        }
+    }
 }
