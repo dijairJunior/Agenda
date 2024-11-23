@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.navigation.fragment.NavHostFragment;
@@ -30,6 +31,19 @@ public class ListaContatoFragment extends Fragment {
         public void onClick(View view) {
             NavHostFragment.findNavController(ListaContatoFragment.this)
                     .navigate(R.id.action_nav_lista_contato_to_nav_edita_contato);
+        }
+    };
+
+    private AdapterView.OnItemClickListener onItemClick = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            //envia para o fragment o contato escolhido na lista
+            Contato contato = (Contato) parent.getItemAtPosition(position);
+            Bundle dados = new Bundle();
+            dados.putSerializable("contato", contato);
+
+            NavHostFragment.findNavController(ListaContatoFragment.this)
+                    .navigate(R.id.action_nav_lista_contato_to_nav_edita_contato, dados);
         }
     };
 
