@@ -1,7 +1,9 @@
 package dijairdev.com.br.ui.edita.contato;
 
+import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -11,9 +13,11 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +36,7 @@ import dijairdev.com.br.modelo.Contato;
 public class EditaContatoFragment extends Fragment {
 
     private static final int RESULT_CAMERA = 1000;
+    private static final int PERMISSIONS_REQUEST_SEND_SMS = 2000;
     private String mCurrentPhotoPath;
     private ImageView imageViewFoto;
     private EditText edtNome, edtEmail, edtTelefone, edtCep, edtEndereco;
@@ -129,5 +135,57 @@ public class EditaContatoFragment extends Fragment {
                 dispatchTakePictureIntent();
             }
         });
+
+        /* no final do método onViewCreated .... */
+        buttonSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (edtTelefone.getText().toString().equals("")) {
+                    return;
+                }
+                verificaPermissao();
+            }
+        });
     }
+
+    private void verificaPermissao() {
+        //verifica se o aplicativo tem permissão
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            //verifica se a permissão já foi negada no passado
+            if (shouldShowRequestPermissionRationale(Manifest.permission.SEND_SMS)) {
+                Toast.makeText(getActivity(), R.string.erro_sms, Toast.LENGTH_LONG).show();
+            } else {
+                //abre a caixa de diálogo de solicitação da permissão
+                requestPermissions(new String[]{Manifest.permission.SEND_SMS},
+                        PERMISSIONS_REQUEST_SEND_SMS);
+            }
+        } else {
+            enviarSMS(edtTelefone.getText().toString());
+        }
+    }
+
+    protected void enviarSMS(String telefone) {
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(telefone,
+                null, "Olá. Adicionei seu número.", null, null);
+        Toast.makeText(getActivity(), R.string.mensagem_enviada, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_SEND_SMS: {
+                if (permissions[0].equalsIgnoreCase  (Manifest.permission.SEND_SMS) && grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED) {
+                    //tudo OK, pode enviar
+                    enviarSMS(edtTelefone.getText().toString());
+                } else {
+                    Log.d(getClass().getSimpleName(), "Sem permissão para enviar SMS.");
+                }
+            }
+        }
+    }
+
 }
