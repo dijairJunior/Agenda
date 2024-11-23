@@ -1,6 +1,8 @@
 package dijairdev.com.br.modelo;
 
-public class Contato {
+import java.io.Serializable;
+
+public class Contato implements Serializable {
     private String nome;
     private String email;
     private String telefone;
