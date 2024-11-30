@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import androidx.navigation.fragment.NavHostFragment;
 
+import java.io.Serializable;
 import java.util.List;
 
 import dijairdev.com.br.R;
@@ -51,6 +52,19 @@ public class ListaContatoFragment extends Fragment {
         return new ListaContatoFragment();
     }
 
+    private AdapterView.OnItemClickListener onItemClick = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            //envia para o fragment o contato escolhido na lista
+            Contato contato = (Contato) parent.getItemAtPosition(position);
+            Bundle dados = new Bundle();
+            dados.putSerializable("contato", contato);
+
+            NavHostFragment.findNavController(ListaContatoFragment.this)
+                    .navigate(R.id.action_nav_lista_contato_to_nav_edita_contato, dados);
+        }
+    };
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -67,6 +81,9 @@ public class ListaContatoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //atribuição click itens do ListView
+        ListView listViewContatos = view.findViewById(R.id.listViewContatos);
 
         //Atribuição click fabNovo
         FloatingActionButton fabNovo = view.findViewById(R.id.fabNovo);
