@@ -15,12 +15,11 @@ import android.widget.ListView;
 
 import androidx.navigation.fragment.NavHostFragment;
 
-import java.io.Serializable;
 import java.util.List;
 
 import dijairdev.com.br.R;
 import dijairdev.com.br.adapter.ListaContatoAdapter;
-import dijairdev.com.br.dao.ContatoDaoSQLite;
+import dijairdev.com.br.dao.AgendaDaoSQLite;
 import dijairdev.com.br.modelo.Contato;
 
 public class ListaContatoFragment extends Fragment {
@@ -82,8 +81,8 @@ public class ListaContatoFragment extends Fragment {
 
         @Override
         protected List<Contato> doInBackground(String... strings) {
-            ContatoDaoSQLite contatoDaoSQLite = new ContatoDaoSQLite(getActivity());
-            return contatoDaoSQLite.lista();
+            AgendaDaoSQLite agendaDaoSQLite = new AgendaDaoSQLite(getActivity());
+            return agendaDaoSQLite.listaContatos();
         }
 
         @Override

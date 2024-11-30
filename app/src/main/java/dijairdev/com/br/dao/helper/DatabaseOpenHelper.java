@@ -23,6 +23,15 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
                 "foto blob);";
 
         db.execSQL(scriptCreate);
+
+        //compromisso
+        scriptCreate  = "create table Compromisso (" +
+                "id integer primary key autoincrement," +
+                "textoCurto text not null," +
+                "textoLongo text," +
+                "data text," +
+                "hora text);";
+        db.execSQL(scriptCreate);
     }
 
     @Override
