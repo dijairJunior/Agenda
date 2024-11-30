@@ -41,7 +41,7 @@ import java.io.File;
 import java.io.IOException;
 
 import dijairdev.com.br.R;
-import dijairdev.com.br.dao.ContatoDaoSQLite;
+import dijairdev.com.br.dao.AgendaDaoSQLite;
 import dijairdev.com.br.modelo.Contato;
 import dijairdev.com.br.retrofit.RetrofitConfig;
 import dijairdev.com.br.retrofit.cep.Cep;
@@ -266,7 +266,6 @@ public class EditaContatoFragment extends Fragment {
         }
     }
 
-
     protected void enviarSMS(String telefone) {
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(telefone,
@@ -342,7 +341,7 @@ public class EditaContatoFragment extends Fragment {
 
     private class SalvaContatoTask extends AsyncTask<Contato, Integer, Long> {
 
-        ContatoDaoSQLite contatoDaoSQLite = new ContatoDaoSQLite(getActivity());
+        AgendaDaoSQLite agendaDaoSQLite = new AgendaDaoSQLite(getActivity());
 
         @Override
         protected Long doInBackground(Contato... contatos) {
@@ -352,9 +351,9 @@ public class EditaContatoFragment extends Fragment {
                 - se possui id, o contato foi alterado: altera(contato[0])
              */
             if (contatos[0].getId() == null) {
-                return contatoDaoSQLite.grava(contatos[0]);
+                return agendaDaoSQLite.grava(contatos[0]);
             } else {
-                contatoDaoSQLite.atualiza(contatos[0]);
+                agendaDaoSQLite.atualiza(contatos[0]);
                 return contatos[0].getId();
             }
         }
@@ -363,7 +362,7 @@ public class EditaContatoFragment extends Fragment {
         protected void onPostExecute(Long id) {
             Toast.makeText(getActivity(), R.string.sucesso_cadastro, Toast.LENGTH_LONG).show();
             contato.setId(id);
-            contatoDaoSQLite.close();
+            agendaDaoSQLite.close();
             //volta para lista após o salvamento
             NavHostFragment.findNavController(EditaContatoFragment.this)
                     .navigate(R.id.action_nav_edita_contato_to_nav_lista_contato);
@@ -373,11 +372,11 @@ public class EditaContatoFragment extends Fragment {
     //classe assíncrona para excluir um contato
     private class ExcluirContatoTask extends  AsyncTask<Contato, Integer, Integer> {
 
-        ContatoDaoSQLite contatoDaoSQLite = new ContatoDaoSQLite(getActivity());
+        AgendaDaoSQLite agendaDaoSQLite = new AgendaDaoSQLite(getActivity());
 
         @Override
         protected Integer doInBackground(Contato...contatos) {
-            return contatoDaoSQLite.exclui(contatos[0]);
+            return agendaDaoSQLite.exclui(contatos[0]);
         }
 
         @Override

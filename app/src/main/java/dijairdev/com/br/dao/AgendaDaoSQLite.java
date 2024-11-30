@@ -9,15 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dijairdev.com.br.dao.helper.DatabaseOpenHelper;
+import dijairdev.com.br.modelo.Compromisso;
 import dijairdev.com.br.modelo.Contato;
 
-public class ContatoDaoSQLite {
+public class AgendaDaoSQLite {
     private static final String DATABASE_NAME = "datatabase.db";
     private static final int DATABASE_VERSION = 1;
     private final SQLiteDatabase database;
     private final DatabaseOpenHelper databaseOpenHelper;
 
-    public ContatoDaoSQLite(Context context) {
+    public AgendaDaoSQLite(Context context) {
         this.databaseOpenHelper = new DatabaseOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.database = databaseOpenHelper.getWritableDatabase();
     }
@@ -30,7 +31,16 @@ public class ContatoDaoSQLite {
         contentValues.put("telefone", contato.getTelefone());
         contentValues.put("cep", contato.getCep());
         contentValues.put("foto", contato.getFoto());
-        return  contentValues;
+        return contentValues;
+    }
+
+    private ContentValues carregaDados(Compromisso compromisso) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("textoCurto", compromisso.getTextoCurto());
+        contentValues.put("textoLongo", compromisso.getTextoLongo());
+        contentValues.put("data", compromisso.getData());
+        contentValues.put("hora", compromisso.getHora());
+        return contentValues;
     }
 
     private Contato ormContato(Cursor c) {
@@ -45,19 +55,43 @@ public class ContatoDaoSQLite {
         return  contato;
     }
 
+    private Compromisso ormCompromisso(Cursor c) {
+        Compromisso compromisso = new Compromisso();
+        compromisso.setId(c.getLong(c.getColumnIndex("id")));
+        compromisso.setTextoCurto(c.getString(c.getColumnIndex("textoCurto")));
+        compromisso.setTextoLongo(c.getString(c.getColumnIndex("textoLongo")));
+        compromisso.setData(c.getString(c.getColumnIndex("data")));
+        compromisso.setHora(c.getString(c.getColumnIndex("hora")));
+        return compromisso;
+    }
+
     public long grava(Contato contato) {
         return database.insert("Contato", null, carregaDados(contato));
     }
 
+    public long grava(Compromisso compromisso) {
+        return database.insert("Compromisso", null, carregaDados(compromisso));
+    }
+
     public int atualiza(Contato contato) {
-        return database.update("Contato", carregaDados(contato), "id=" + contato.getId(), null);
+        return database.update("Contato", carregaDados(contato), "id=" + contato.getId(),
+                null);
+    }
+
+    public int atualiza(Compromisso compromisso) {
+        return database.update("Compromisso", carregaDados(compromisso), "id=" + compromisso.getId(),
+                null);
     }
 
     public int exclui(Contato contato) {
         return database.delete("Contato", "id=" + contato.getId(), null);
     }
 
-    public Contato buscaPorId(Long id) {
+    public int exclui(Compromisso compromisso) {
+        return database.delete("Compromisso", "id=" + compromisso.getId(), null);
+    }
+
+    public Contato buscaContatoPorId(Long id) {
         Cursor c = database.query("Contato", null, "id=" + id, null, null, null, null);
         c.moveToFirst();
         Contato contato = ormContato(c);
@@ -65,7 +99,15 @@ public class ContatoDaoSQLite {
         return  contato;
     }
 
-    public List<Contato> lista() {
+    public Compromisso buscaCompromissoPorId(Long id) {
+        Cursor c = database.query("Compromisso", null, "id=" + id, null, null, null, null);
+        c.moveToFirst();
+        Compromisso compromisso = ormCompromisso(c);
+        c.close();
+        return  compromisso;
+    }
+
+    public List<Contato> listaContatos() {
         List<Contato> contatos = new ArrayList<>();
         Cursor c = database.query("Contato", null, null, null, null, null, null);
         while (c.moveToNext()) {
@@ -73,6 +115,16 @@ public class ContatoDaoSQLite {
         }
         c.close();
         return  contatos;
+    }
+
+    public List<Compromisso> listaCompromissos() {
+        List<Compromisso> compromissos = new ArrayList<>();
+        Cursor c = database.query("Compromisso", null, null, null, null, null, null);
+        while (c.moveToNext()) {
+            compromissos.add(ormCompromisso(c));
+        }
+        c.close();
+        return  compromissos;
     }
 
     public void close() {
